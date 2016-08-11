@@ -3,10 +3,14 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "config": {
+      "port": 9876
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "browserify -t [ babelify ] main.js -o bundle.js",
-    "dev": "watchify main.js -t babelify -p livereactload -o bundle.js"
+    "dev": "watchify main.js -t babelify -p livereactload -o bundle.js",
+    "start": "python -m SimpleHTTPServer ${npm_config_port}"
   },
   "author": "",
   "license": "ISC",
