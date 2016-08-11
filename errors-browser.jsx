@@ -215,10 +215,6 @@ const ErrorsBrowser = React.createClass({
                 {...error} />
         ) : '';
 
-        if (!connected) {
-            return <center style={{color: 'red', padding: '100px'}}>disconnected</center>;
-        }
-
         if (this.state.view === 'settings') {
             return (
                 <form
@@ -234,6 +230,10 @@ const ErrorsBrowser = React.createClass({
                     />
                 </form>
             );
+        }
+
+        if (!connected) {
+            return <center style={{color: 'red', padding: '100px'}}>disconnected</center>;
         }
 
         const ui = this.state.loading ? (

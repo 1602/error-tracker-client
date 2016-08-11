@@ -22,7 +22,6 @@ function view(state, action) {
 
     if (action.type === 'TOGGLE_VIEW') {
         state = state === 'browser' ? 'settings' : 'browser';
-        console.log('toggle view', state);
     }
 
     return state;
@@ -170,7 +169,8 @@ function errors(state, action) {
             const newState = {
                 ...state,
                 items: [
-                    error(action.error, action),
+                    error(state.items.find(e => e.id === action.error.id) ||
+                          action.error, action),
                     ...state.items.filter(e => e.id !== action.error.id)
                 ]
             };
@@ -236,9 +236,10 @@ function error(state, action) {
             ...state,
             severity: state.type,
             isSubscribed: notifier.isSubscribed(state.id),
-            expanded: Object.keys(state.details)
+            expanded: state.expanded || Object.keys(state.details)
                 .map((node, i) => i === 0)
         };
+
     } else if (action.type === 'TOGGLE_SUBSCRIPTION') {
         if (action.errorId !== state.id) {
             return state;
