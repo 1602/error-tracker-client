@@ -1,0 +1,92 @@
+nav {
+    padding: 10px 5px;
+    padding-left: 10px;
+}
+
+ul.errors-list {
+    overflow: auto;
+}
+
+.errors-list > li {
+    font-family: menlo, monospace;
+    justify-content: space-between;
+    display: flex;
+    align-items: center;
+    font-size: 12px;
+    border-radius: 1px;
+    padding: 6px;
+    margin: 5px 0 5px 5px;
+    list-style: none;
+    background: rgba(0, 0, 0, 0.05);
+    position: relative;
+    border-left: 5px solid rgba(0,0,0,0.1);
+    box-sizing: border-box;
+}
+
+.errors-list .error {
+    max-width: calc(100% - 150px);
+    display: flex;
+}
+
+li.is-active {
+    background: #CACFD3;
+}
+
+.errors-list > li.uncaught-exception {
+    border-left-color: crimson;
+}
+
+.env-badge {
+    background: rgba(0,0,0,0.2);
+    display: inline-block;
+    padding: 2px;
+    border-radius: 1px;
+    font-weight: 600;
+    color: white;
+    text-transform: uppercase;
+    font-size: 9px;
+    letter-spacing: 0.05em;
+}
+
+.env-pro {
+    background: #92B7D4;
+}
+
+.env-sta {
+    background: #C7C771;
+}
+
+.env-dev {
+    background: #8ECE8E;
+}
+
+.app-name {
+    flex-shrink: 0;
+    font-weight: bold;
+    background: rgba(136, 83, 38, 0.45);
+    text-align: center;
+    color: #eee;
+    padding: 2px;
+    border-radius: 1px;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    width: 50px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.error-message {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 0 5px;
+    display: inline-block
+}
+
+.error-info {
+    flex-shrink: 0;
+    font-size: 10px;
+}
+

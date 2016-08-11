@@ -1,0 +1,50 @@
+
+html, body, #app, #app > div {height: 100%}
+
+.panel {
+    width: 50%;
+    height: 100%;
+}
+
+.fixed {
+    display: flex;
+    flex-direction: column;
+}
+
+body {
+  font-family: menlo, monospace;
+  line-height: 1.35;
+  font-size: 12px;
+}
+
+select, option, input {
+  font-family: menlo, monospace;
+}
+
+pre {
+  font-family: system, monospace;
+  font-size: 12px;
+}
+
+h3 {
+  font-size: 1.5em;
+  font-weight: 300;
+  margin-bottom: 0.5em;
+}
+
+li {
+  margin: 0 0 1em 2em;
+}
+
+.inspect-bool {
+  color: blue;
+}
+
+.inspect-str {
+  color: green;
+}
+
+.inspect-num {
+  color: #980476;
+}
+

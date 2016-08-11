@@ -1,0 +1,63 @@
+.explore-data .structure {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 11px;
+}
+.explore-data .structure .structure {
+  margin: 0 0 10px 10px;
+}
+.explore-data .structure ul {
+  margin: 0 0 0 10px;
+}
+.explore-data .structure li {
+  font-family: monospace;
+  margin: 0;
+  line-height: 16px;
+}
+.explore-data .structure .line {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+}
+.explore-data .structure .line.expanded {
+  display: block;
+}
+.explore-data .structure .key,
+.explore-data .structure .index,
+.explore-data .structure .value {
+  word-wrap: break-word;
+  word-break: break-all;
+  display: inline-block;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+.explore-data .structure .value {
+  white-space: normal;
+}
+.explore-data .structure .index,
+.explore-data .structure .key {
+  margin-right: 5px;
+  -webkit-flex-shrink: 0;
+      -ms-flex-negative: 0;
+          flex-shrink: 0;
+}
+.explore-data a {
+  word-break: break-all;
+}
+.explore-data .expandable > .line > .value {
+  color: #00f;
+  cursor: pointer;
+}
+.explore-data .expandable > .line.expanded > .value {
+  color: #ffa500;
+  font-weight: 700;
+}
+.explore-data .value > div {
+  width: 100%;
+}
+.step-explorer .step-modified-data {
+  color: rgba(0,0,0,0.4);
+}

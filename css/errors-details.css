@@ -1,0 +1,34 @@
+  .info-block + .info-block {
+      margin-top: 0;
+  }
+
+  .info-block {
+      padding: 10px;
+      margin: 5px;
+      background: rgba(0, 0, 0, 0.05);
+  }
+
+  .info-block .error-message-verbose {
+      color: rgba(202, 28, 7, 0.92);
+      margin: 0 0 5px;
+      display: block;
+      font-weight: 500;
+  }
+
+  b { font-weight: 700 }
+
+  .info-block pre, .info-block span {
+      font-family: menlo, monospace;
+      font-size: 10px;
+      word-wrap: break-word;
+      word-break: break-all;
+      white-space: pre-wrap;
+  }
+
+  .info-block span {
+      white-space: normal;
+  }
+
+  ul.error-details {
+      list-style-type: kannada;
+  }
