@@ -30,7 +30,7 @@ function view(state, action) {
 function source(state, action) {
 
     if (typeof state === 'undefined') {
-        state = localStorage.source || 'http://1602.ws:9876';
+        state = localStorage.source || 'http://errors.ub.io';
     }
 
     if (action.type === 'SOURCE_CONFIGURED') {
@@ -238,14 +238,22 @@ function error(state, action) {
             expanded: Object.keys(state.details)
                 .map(() => true)
         };
-    } else if (action.type === 'ERRORS_LOADED' || action.type === 'ERROR_ARRIVED') {
+    } else if (action.type === 'ERRORS_LOADED') {
 
         return {
             ...state,
             severity: state.type,
             isSubscribed: notifier.isSubscribed(state.id),
-            expanded: state.expanded || Object.keys(state.details)
+            expanded: Object.keys(state.details)
                 .map((node, i) => i === 0)
+        };
+    } else if (action.type === 'ERROR_ARRIVED') {
+
+        return {
+            ...action.error,
+            severity: state.type,
+            isSubscribed: notifier.isSubscribed(state.id),
+            expanded: [ true ].concat(state.expanded)
         };
 
     } else if (action.type === 'TOGGLE_SUBSCRIPTION') {

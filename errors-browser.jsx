@@ -78,7 +78,7 @@ const ErrorsBrowser = React.createClass({
                     });
                     store.dispatch({
                         type: 'ERROR_SELECTED',
-                        index
+                        id: error.id
                     });
                 }
             });
@@ -102,15 +102,15 @@ const ErrorsBrowser = React.createClass({
             const data = JSON.parse(e.data);
             if (data.event === 'notification_clicked' && data.entityType === 'error') {
                 const { errors } = this.context.store.getState();
-                let index;
-                getVisibleErrors(errors.items, errors.filters).forEach((e, i) => {
-                    if (String(e.id) === data.id) {
-                        index = i;
-                    }
-                });
+                // let index;
+                // getVisibleErrors(errors.items, errors.filters).forEach((e, i) => {
+                //     if (String(e.id) === data.id) {
+                //         index = i;
+                //     }
+                // });
                 this.context.store.dispatch({
                     type: 'ERROR_SELECTED',
-                    index
+                    id: data.id
                 });
 
             }
@@ -252,7 +252,8 @@ const ErrorsBrowser = React.createClass({
                                 error={error}
                                 isActive={errors.activeErrorId === error.id}
                                 onClick={() => this.context.store.dispatch({
-                                    type: 'ERROR_SELECTED', id: error.id
+                                    type: 'ERROR_SELECTED',
+                                    id: error.id
                                 })}
                                 key={error.id} />))}
                     </ul>
