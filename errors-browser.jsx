@@ -193,7 +193,7 @@ const ErrorsBrowser = React.createClass({
         const { store } = this.context;
         const { errors, connected } = store.getState();
         const visibleErrors = getVisibleErrors(errors.items, errors.filters);
-        const error = visibleErrors[errors.activeErrorIndex];
+        const error = visibleErrors.find(err => err.id === errors.activeErrorId);
 
         const errorDetails = error ? (
             <ErrorDetails
@@ -250,9 +250,9 @@ const ErrorsBrowser = React.createClass({
                         {visibleErrors.map((error, index) => (
                             <ErrorOverview
                                 error={error}
-                                isActive={errors.activeErrorIndex === index}
+                                isActive={errors.activeErrorId === error.id}
                                 onClick={() => this.context.store.dispatch({
-                                    type: 'ERROR_SELECTED', index
+                                    type: 'ERROR_SELECTED', id: error.id
                                 })}
                                 key={error.id} />))}
                     </ul>

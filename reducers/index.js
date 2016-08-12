@@ -133,23 +133,28 @@ function errors(state, action) {
     if (!state) {
         state = {
             items: [],
-            activeErrorIndex: 0,
+            activeErrorId: 0,
             filters: filters(null, action)
         };
     }
 
     if (action.type === 'ERRORS_LOADED') {
+        const items = action.errors.map(e => error(e, action));
+        const activeErrorId = items.length > 0 ? items[0].id : 0;
+
         return {
-            items: action.errors.map(e => error(e, action)),
-            activeErrorIndex: state.activeErrorIndex,
+            items,
+            activeErrorId,
             filters: filters(state.filters, action)
         };
     }
 
     if (action.type === 'FILTER_CHANGED') {
+        const activeErrorId = state.items.length > 0 ? state.items[0].id : 0;
+
         return {
             ...state,
-            activeErrorIndex: 0,
+            activeErrorId,
             filters: filters(state.filters, action)
         };
     }
@@ -165,7 +170,6 @@ function errors(state, action) {
 
     switch (action.type) {
         case 'ERROR_ARRIVED': {
-            const selError = getVisibleErrors(state.items, frs)[state.activeErrorIndex];
             const newState = {
                 ...state,
                 items: [
@@ -174,40 +178,44 @@ function errors(state, action) {
                     ...state.items.filter(e => e.id !== action.error.id)
                 ]
             };
-            newState.activeErrorIndex = Math.max(0, newState.items.indexOf(selError));
             return newState;
         }
         case 'NEXT_ERROR': {
             const visibleErrors = getVisibleErrors(state.items, frs);
+            const id = state.activeErrorId;
+            const currentIndex = visibleErrors.findIndex(err => err.id === id);
+            const next = visibleErrors[currentIndex + 1] || visibleErrors[0] || 0;
+
             return {
                 ...state,
-                activeErrorIndex: Math.min(
-                    visibleErrors.length - 1,
-                    state.activeErrorIndex + 1
-                ),
+                activeErrorId: next.id
             };
         }
         case 'PREV_ERROR':
+            const visibleErrors = getVisibleErrors(state.items, frs);
+            const id = state.activeErrorId;
+            const currentIndex = visibleErrors.findIndex(err => err.id === id);
+            const next = visibleErrors[currentIndex - 1] || visibleErrors[0] || 0;
+
             return {
                 ...state,
-                activeErrorIndex: Math.max(
-                    0,
-                    state.activeErrorIndex - 1
-                ),
+                activeErrorId: next.id
             };
         case 'ERROR_SELECTED':
+            console.log('about to select', action.id);
             return {
                 ...state,
-                activeErrorIndex: action.index
+                activeErrorId: action.id
             };
         case 'TOGGLE_ERROR_DETAILS_NODE':
         case 'EXPAND_ERROR_DETAILS':
+            const i = state.items.findIndex(err => err.id === state.activeErrorId);
             return {
                 ...state,
                 items: [
-                    ...state.items.slice(0, state.activeErrorIndex),
-                    error(state.items[state.activeErrorIndex], action),
-                    ...state.items.slice(state.activeErrorIndex + 1)
+                    ...state.items.slice(0, i),
+                    error(state.items[i], action),
+                    ...state.items.slice(i + 1)
                 ]
             };
     }
