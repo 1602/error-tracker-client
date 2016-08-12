@@ -157,31 +157,31 @@ const ErrorsBrowser = React.createClass({
             '74': () => {
                 if (!(e.metaKey && e.shiftKey)) {
                     console.log('dispatch NEXT_ERROR');
-                    this.context.store.dispatch({type: 'NEXT_ERROR'});
+                    this.context.store.dispatch({ type: 'NEXT_ERROR' });
                 }
             },
             // 'k': up
             '75': () => {
-                this.context.store.dispatch({type: 'PREV_ERROR'});
+                this.context.store.dispatch({ type: 'PREV_ERROR' });
             },
             // '/': search
             '191': () => {
-                this.context.store.dispatch({type: 'SEARCH_BEGIN'});
+                this.context.store.dispatch({ type: 'SEARCH_BEGIN' });
                 // vm.searchMode = 'forward';
             },
             // 'Esc'
             '27': () => {
-                this.context.store.dispatch({type: 'SEARCH_END'});
+                this.context.store.dispatch({ type: 'SEARCH_END' });
                 // vm.searchMode = null;
             },
             // 'e': expand all details
             '69': () => {
-                this.context.store.dispatch({type: 'EXPAND_ERROR_DETAILS'});
+                this.context.store.dispatch({ type: 'EXPAND_ERROR_DETAILS' });
                 // vm.$broadcast('expand_all');
             },
             // 'f': display filters
             '70': () => {
-                this.context.store.dispatch({type: 'DISPLAY_FILTERS'});
+                this.context.store.dispatch({ type: 'DISPLAY_FILTERS' });
                 // vm.$broadcast('nav');
             }
         };
