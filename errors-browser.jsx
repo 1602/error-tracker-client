@@ -134,8 +134,19 @@ const ErrorsBrowser = React.createClass({
         }
 
         const handlers = {
-            '121': () => this.context.store.dispatch({type: 'TOGGLE_VIEW'}),
-            '120': () => this.context.store.dispatch({type: 'TOGGLE_VIEW'}),
+            // cmd
+            '93': () => {
+                // do nothing (for now);
+            },
+            // cmd+, (cmd+comma): settings
+            '188': () => {
+                e.preventDefault();
+                if (e.metaKey || e.ctrlKey) {
+                    this.context.store.dispatch({ type: 'TOGGLE_SETTINGS' });
+                }
+            },
+            // fallback to F10 for those who use win/linux
+            '121': () => this.context.store.dispatch({ type: 'TOGGLE_SETTINGS' }),
             // 'r'+cmd: reload
             '82': () => {
                 if (e.metaKey || e.ctrlKey) {

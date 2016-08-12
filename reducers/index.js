@@ -20,8 +20,14 @@ function view(state, action) {
         state = 'browser';
     }
 
-    if (action.type === 'TOGGLE_VIEW') {
+    // cmd+comma toggles settings back and forth
+    if (action.type === 'TOGGLE_SETTINGS') {
         state = state === 'browser' ? 'settings' : 'browser';
+    }
+
+    // switch to browser mode when error selected (e.g. notification clicked)
+    if (action.type === 'ERROR_SELECTED') {
+        state = 'browser';
     }
 
     return state;
