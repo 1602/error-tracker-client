@@ -52,16 +52,20 @@ export default React.createClass({
         const howLongAgo = moment(this.props.error.lastOccurrence).fromNow(true);
 
         return (
-            <li className={this.calcClassName()}
-                onClick={this.props.onClick}>
-                <span className="error">
-                    <span className="app-name" style={style}> {appName} </span>
-                    <span className="error-message"> {message} </span>
-                </span>
+            <li className={ this.calcClassName() }
+                onClick={ this.props.onClick }>
+                <a className="error" tabIndex="1" ref={ anchor => {
+                    if (anchor !== null && this.props.isActive) {
+                        anchor.focus();
+                    }
+                }}>
+                    <span className="app-name" style={ style }> { appName } </span>
+                    <span className="error-message"> { message } </span>
+                </a>
                 <span className="error-info">
-                    <span>&times;{occurrences}</span>
+                    <span>&times;{ occurrences }</span>
                     {' '}
-                    <span className={`env-badge ${envBadge}`}>{env}</span>
+                    <span className={`env-badge ${ envBadge }`}>{env}</span>
                     {' '}
                     <span>{howLongAgo}</span>
                 </span>

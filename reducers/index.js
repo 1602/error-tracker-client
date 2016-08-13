@@ -50,16 +50,18 @@ function sources(state, action) {
             },
             ...state.slice(action.index + 1)
         ];
+
         localStorage.sources = JSON.stringify(newState);
         return newState;
     }
 
     if (action.type === 'SOURCE_ADDED') {
         if (!state.find(source => source.url === action.url)) {
-            const newState = state.concat({
-                url: action.url,
-                enabled: true
-            });
+            const newState = [
+                ...state,
+                { url: action.url, enabled: true }
+            ];
+
             localStorage.sources = JSON.stringify(newState);
             return newState;
         }

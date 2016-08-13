@@ -37,17 +37,22 @@ export default React.createClass({
                     { sources.map((source, index) => (
                     <li key={ index }>
                         <label>
-                            <input type="checkbox" checked={ source.enabled } onChange={e => store.dispatch({
-                                type: 'SOURCE_CONFIGURED',
-                                index,
-                                enabled: e.target.checked
-                            })} />
+                            <input
+                                type="checkbox"
+                                checked={ source.enabled }
+                                onChange={ e => store.dispatch({
+                                    type: 'SOURCE_CONFIGURED',
+                                    index,
+                                    enabled: e.target.checked
+                                })} />
                             { source.url }
                         </label>
                         <a href="#" onClick={ () => store.dispatch({
                             type: 'SOURCE_REMOVED',
                             index
-                        })} >&times;</a></li>
+                            })}
+                        >&times;</a>
+                    </li>
                     )) }
                 </ul>
                 <form
@@ -56,7 +61,12 @@ export default React.createClass({
                         addSource(this.refs.sourceUrl.value)
                             .then(() => this.refs.sourceUrl.value = '')
                     }} >
-                    <input disabled={ loading } type="text" size="30" name="sourceUrl" ref="sourceUrl" />
+                    <input
+                        disabled={ loading }
+                        type="text"
+                        size="30"
+                        name="sourceUrl"
+                        ref="sourceUrl" />
                 </form>
             </div>
         );
