@@ -54,7 +54,7 @@ export default React.createClass({
         return (
             <li className={ this.calcClassName() }
                 onClick={ this.props.onClick }>
-                <a className="error" tabIndex="1" ref={ anchor => {
+                <a className="error" style={{outline: 0}} tabIndex="1" ref={ anchor => {
                     if (anchor !== null && this.props.isActive) {
                         anchor.focus();
                     }
