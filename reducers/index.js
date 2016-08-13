@@ -8,7 +8,7 @@ const notifier = createNotifier(window);
 
 export default combineReducers({
     view,
-    source,
+    sources,
     loading,
     errors,
     connected
@@ -33,15 +33,30 @@ function view(state, action) {
     return state;
 }
 
-function source(state, action) {
+function sources(state, action) {
 
     if (typeof state === 'undefined') {
-        state = localStorage.source || 'http://errors.ub.io';
+        state = localStorage.sources
+            ? JSON.parse(localStorage.sources)
+            : [ 'http://errors.ub.io' ];
     }
 
-    if (action.type === 'SOURCE_CONFIGURED') {
-        state = action.source;
-        localStorage.source = action.source;
+    if (action.type === 'SOURCE_ADDED') {
+        if (!state.includes(action.source)) {
+            const newState = state.concat(action.source);
+            localStorage.sources = JSON.stringify(newState);
+            return newState;
+        }
+    }
+
+    if (action.type === 'SOURCE_REMOVED') {
+        const newState = [
+            ...state.slice(0, action.index),
+            ...state.slice(action.index + 1)
+        ];
+
+        localStorage.sources = JSON.stringify(newState);
+        return newState;
     }
 
     return state;
@@ -145,7 +160,14 @@ function errors(state, action) {
     }
 
     if (action.type === 'ERRORS_LOADED') {
-        const items = action.errors.map(e => error(e, action));
+        const items = state.items
+            .concat(
+                action.errors
+                    .filter(e => !state.items.find(ee => ee.id === e.id))
+                    .map(e => error(e, action))
+            )
+            .sort((a, b) => a.lastOccurrence < b.lastOccurrence ? 1 : -1);
+
         const activeErrorId = items.length > 0 ? items[0].id : 0;
 
         return {

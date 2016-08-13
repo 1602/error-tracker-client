@@ -3,6 +3,7 @@
 import React from 'react';
 import ErrorOverview from './error-overview.jsx';
 import ErrorDetails from './error-details.jsx';
+import Settings from './settings.jsx';
 import Filters from './filters.jsx';
 import createNotifier from './domains/client-side-notifications';
 import getVisibleErrors from './domains/errors-filter';
@@ -24,18 +25,20 @@ const ErrorsBrowser = React.createClass({
     },
 
     reloadErrors() {
-        if (!this.state.source) {
+        const { sources } = this.state;
+        if (!sources) {
             return;
         }
 
-        this.context.store.dispatch({type: 'RELOAD_ERRORS'});
-        return fetch(this.state.source + '/errors.json')
-            .then(response => response.json())
-            .then(data => {
-                this.context.store.dispatch({
+        this.context.store.dispatch({ type: 'RELOAD_ERRORS' });
+
+        return Promise.all(sources.map(source => fetch(`${source}/errors.json`)))
+            .then(responses => Promise.all(responses.map(r => r.json())))
+            .then(datas => {
+                datas.forEach(data => this.context.store.dispatch({
                     type: 'ERRORS_LOADED',
                     errors: data.errors
-                });
+                }));
             });
     },
 
@@ -117,7 +120,11 @@ const ErrorsBrowser = React.createClass({
         });
         this.reloadErrors();
 
-        this.connectToServer(this.state.source + '/live-updates', this.context.store);
+        if (this.state.sources) {
+            this.state.sources.forEach(source =>
+                this.connectToServer(source + '/live-updates', this.context.store)
+            );
+        }
 
         window.addEventListener('online', () => {
             console.log('back online');
@@ -227,20 +234,7 @@ const ErrorsBrowser = React.createClass({
         ) : '';
 
         if (this.state.view === 'settings') {
-            return (
-                <form
-                    onSubmit={ e => {
-                        store.dispatch({
-                            type: 'SOURCE_CONFIGURED',
-                            source: e.target.sourceUrl.value
-                        });
-                        e.preventDefault();
-                    }} >
-                    <input type="text" size="30" name="sourceUrl"
-                        defaultValue={store.getState().source}
-                    />
-                </form>
-            );
+            return (<Settings />);
         }
 
         if (!connected) {
