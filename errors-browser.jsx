@@ -32,7 +32,10 @@ const ErrorsBrowser = React.createClass({
 
         this.context.store.dispatch({ type: 'RELOAD_ERRORS' });
 
-        return Promise.all(sources.map(source => fetch(`${source}/errors.json`)))
+        return Promise.all(sources
+            .filter(s => s.enabled)
+            .map(source => fetch(`${source.url}/errors.json`))
+        )
             .then(responses => Promise.all(responses.map(r => r.json())))
             .then(datas => {
                 datas.forEach(data => this.context.store.dispatch({
@@ -122,7 +125,7 @@ const ErrorsBrowser = React.createClass({
 
         if (this.state.sources) {
             this.state.sources.forEach(source =>
-                this.connectToServer(source + '/live-updates', this.context.store)
+                this.connectToServer(source.url + '/live-updates', this.context.store)
             );
         }
 

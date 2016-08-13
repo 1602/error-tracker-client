@@ -35,7 +35,16 @@ export default React.createClass({
             <div className="settings">
                 <ul className="sources-list">
                     { sources.map((source, index) => (
-                    <li>{ source } <a href="#" onClick={ () => store.dispatch({
+                    <li key={ index }>
+                        <label>
+                            <input type="checkbox" checked={ source.enabled } onChange={e => store.dispatch({
+                                type: 'SOURCE_CONFIGURED',
+                                index,
+                                enabled: e.target.checked
+                            })} />
+                            { source.url }
+                        </label>
+                        <a href="#" onClick={ () => store.dispatch({
                             type: 'SOURCE_REMOVED',
                             index
                         })} >&times;</a></li>
@@ -47,18 +56,18 @@ export default React.createClass({
                         addSource(this.refs.sourceUrl.value)
                             .then(() => this.refs.sourceUrl.value = '')
                     }} >
-                    <input disabled={loading} type="text" size="30" ref="sourceUrl" />
+                    <input disabled={ loading } type="text" size="30" name="sourceUrl" ref="sourceUrl" />
                 </form>
             </div>
         );
 
-        function addSource(source) {
+        function addSource(url) {
             component.setLoading(true);
-            return fetch(source + '/status.json')
+            return fetch(url + '/status.json')
                 .then(r => r.json())
                 .then(status => {
                     if (status.version) {
-                        store.dispatch({ type: 'SOURCE_ADDED', source });
+                        store.dispatch({ type: 'SOURCE_ADDED', url });
                     }
                 })
                 .catch(err => {

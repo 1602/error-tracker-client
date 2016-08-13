@@ -38,12 +38,28 @@ function sources(state, action) {
     if (typeof state === 'undefined') {
         state = localStorage.sources
             ? JSON.parse(localStorage.sources)
-            : [ 'http://errors.ub.io' ];
+            : [ { enabled: true, url: 'http://errors.ub.io' } ];
+    }
+
+    if (action.type === 'SOURCE_CONFIGURED') {
+        const newState = [
+            ...state.slice(0, action.index),
+            {
+                ...state[action.index],
+                enabled: action.enabled
+            },
+            ...state.slice(action.index + 1)
+        ];
+        localStorage.sources = JSON.stringify(newState);
+        return newState;
     }
 
     if (action.type === 'SOURCE_ADDED') {
-        if (!state.includes(action.source)) {
-            const newState = state.concat(action.source);
+        if (!state.find(source => source.url === action.url)) {
+            const newState = state.concat({
+                url: action.url,
+                enabled: true
+            });
             localStorage.sources = JSON.stringify(newState);
             return newState;
         }
@@ -117,7 +133,18 @@ function filters(state, action) {
     }
 
     if (action.type === 'ERRORS_LOADED') {
-        state = ['app', 'env', 'host'].reduce(grab, {
+        state = ['app', 'env', 'host'].reduce((newState, filterType) => {
+            newState[filterType] = action.errors.reduce((res, err) => {
+                if (!res.options.includes(err[filterType])) {
+                    res.options.push(err[filterType]);
+                }
+                return res;
+            }, {
+                options: state[filterType].options,
+                selected: state[filterType].selected
+            });
+            return newState;
+        }, {
             severity: state.severity
         });
     } else if (action.type === 'FILTER_CHANGED') {
@@ -127,15 +154,7 @@ function filters(state, action) {
         };
     }
 
-    function grab(newState, filterType) {
-        newState[filterType] = action.errors.reduce((res, err) => {
-            if (!res.options.includes(err[filterType])) {
-                res.options.push(err[filterType]);
-            }
-            return res;
-        }, {options: [], selected: -1});
-        return newState;
-    }
+    
 
     return state;
 }
