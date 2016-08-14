@@ -105,22 +105,12 @@ const ErrorsBrowser = React.createClass({
 
         document.addEventListener('keydown', this.shortcutHandler);
         window.addEventListener('message', e => {
-            const data = JSON.parse(e.data);
-            if (data.event === 'notification_clicked' && data.entityType === 'error') {
-                const { errors } = this.context.store.getState();
-                // let index;
-                // getVisibleErrors(errors.items, errors.filters).forEach((e, i) => {
-                //     if (String(e.id) === data.id) {
-                //         index = i;
-                //     }
-                // });
-                this.context.store.dispatch({
-                    type: 'ERROR_SELECTED',
-                    id: data.id
-                });
-
+            const { event, entityType, id } = JSON.parse(e.data);
+            if (event === 'notification_clicked' && entityType === 'error') {
+                this.context.store.dispatch({ type: 'ERROR_SELECTED', id });
             }
         });
+
         this.reloadErrors();
 
         if (this.state.sources) {
