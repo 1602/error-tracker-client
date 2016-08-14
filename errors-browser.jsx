@@ -26,11 +26,12 @@ const ErrorsBrowser = React.createClass({
 
     reloadErrors() {
         const { sources } = this.state;
+        const { store } = this.context;
         if (!sources) {
             return;
         }
 
-        this.context.store.dispatch({ type: 'RELOAD_ERRORS' });
+        store.dispatch({ type: 'RELOAD_ERRORS' });
 
         return Promise.all(sources
             .filter(s => s.enabled)
@@ -38,16 +39,16 @@ const ErrorsBrowser = React.createClass({
         )
             .then(responses => Promise.all(responses.map(r => r.json())))
             .then(datas => {
-                datas.forEach(data => this.context.store.dispatch({
+                datas.forEach(data => store.dispatch({
                     type: 'ERRORS_LOADED',
                     errors: data.errors
                 }));
             });
     },
 
-    connectToServer(src) {
+    liveUpdates(src) {
         const notifier = createNotifier(window);
-        const store = this.context.store;
+        const { store } = this.context;
         const es = new EventSource(src);
 
         es.onerror = e => {
@@ -55,7 +56,7 @@ const ErrorsBrowser = React.createClass({
             console.info('close es');
             store.dispatch({ type: 'DISCONNECTED' });
             es.close();
-            this.connectToServer(src);
+            this.liveUpdates(src);
         };
 
         es.onopen = function() {
@@ -64,29 +65,14 @@ const ErrorsBrowser = React.createClass({
         };
 
         es.onmessage = e => {
-            const error = JSON.parse(e.data);
-            store.dispatch({
-                type: 'ERROR_ARRIVED',
-                error
-            });
-
+            const data = JSON.parse(e.data);
+            const { id, message, stack } = data;
+            store.dispatch({ type: 'ERROR_ARRIVED', data });
             notifier.notify({
-                subscriptionTag: error.id,
-                title: error.message,
-                body: error.stack,
-                onClick: () => {
-                    const { errors } = this.context.store.getState();
-                    let index;
-                    getVisibleErrors(errors.items, errors.filters).forEach((e, i) => {
-                        if (e.id === error.id) {
-                            index = i;
-                        }
-                    });
-                    store.dispatch({
-                        type: 'ERROR_SELECTED',
-                        id: error.id
-                    });
-                }
+                subscriptionTag: id,
+                title: message,
+                body: stack,
+                onClick: () => store.dispatch({ type: 'ERROR_SELECTED', id })
             });
         };
     },
@@ -115,14 +101,14 @@ const ErrorsBrowser = React.createClass({
 
         if (this.state.sources) {
             this.state.sources.forEach(source =>
-                this.connectToServer(source.url + '/live-updates', this.context.store)
+                this.liveUpdates(source.url + '/live-updates', this.context.store)
             );
         }
 
         window.addEventListener('online', () => {
             console.log('back online');
             this.reloadErrors();
-            // this.connectToServer(this.props.source + '/live-updates', this.context.store);
+            // this.liveUpdates(this.props.source + '/live-updates', this.context.store);
             // Re-sync data with server.
         }, false);
 
