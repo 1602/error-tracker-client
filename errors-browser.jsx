@@ -1,12 +1,10 @@
 'use strict';
 
 import React from 'react';
-import ErrorOverview from './error-overview.jsx';
-import ErrorDetails from './error-details.jsx';
+import { connect } from 'react-redux';
+import Errors from './containers/errors.jsx';
 import Settings from './settings.jsx';
-import Filters from './filters.jsx';
 import createNotifier from './domains/client-side-notifications';
-import getVisibleErrors from './domains/errors-filter';
 
 /* global document, fetch */
 
@@ -20,29 +18,47 @@ const ErrorsBrowser = React.createClass({
         store: React.PropTypes.object
     },
 
-    getInitialState() {
-        return this.context.store.getState();
-    },
-
     reloadErrors() {
-        const { sources } = this.state;
         const { store } = this.context;
+        const { sources } = store.getState();
+        // const sources = [
+        // cons{ url: 'http://localhost:8090/data/production', enabled: true },
+        // cons{ url: 'http://localhost:8090/data/staging', enabled: true },
+        // cons{ url: 'http://errors.loc.ub.io', enabled: true },
+        // ]
+
         if (!sources) {
             return;
         }
 
-        store.dispatch({ type: 'RELOAD_ERRORS' });
-
-        return Promise.all(sources
+        return sources
             .filter(s => s.enabled)
-            .map(source => fetch(`${source.url}/errors.json`))
-        )
-            .then(responses => Promise.all(responses.map(r => r.json())))
-            .then(datas => {
-                datas.forEach(data => store.dispatch({
-                    type: 'ERRORS_LOADED',
-                    errors: data.errors
-                }));
+            .reduce((flow, source) => {
+                return flow.then(() => {
+                    store.dispatch({
+                        type: 'STATUS_UPDATE',
+                        text: `Loading data from ${ source.url }`
+                    });
+                    return fetch(`${source.url}/errors.json`);
+                })
+                    .then(response => response.json())
+                    .then(data => store.dispatch({
+                        type: 'ERRORS_LOADED',
+                        errors: data.errors
+                    }));
+            }, Promise.resolve())
+            .then(() => {
+                store.dispatch({
+                    type: 'STATUS_UPDATE',
+                    text: `All done`,
+                    timeout: 1000
+                });
+            })
+            .catch(err => {
+                store.dispatch({
+                    type: 'STATUS_UPDATE',
+                    text: err.message
+                });
             });
     },
 
@@ -51,23 +67,27 @@ const ErrorsBrowser = React.createClass({
         const { store } = this.context;
         const es = new EventSource(src);
 
-        es.onerror = e => {
-            console.warn(e);
-            console.info('close es');
-            store.dispatch({ type: 'DISCONNECTED' });
+        es.onerror = () => {
+            store.dispatch({
+                type: 'STATUS_UPDATE',
+                text: 'Disconnected from live updates stream'
+            });
             es.close();
-            this.liveUpdates(src);
+            setTimeout(() => this.liveUpdates(src), 1000);
         };
 
         es.onopen = function() {
-            console.log('connected!');
-            store.dispatch({ type: 'CONNECTED' });
+            store.dispatch({
+                type: 'STATUS_UPDATE',
+                text: 'Conneted to live updates stream',
+                timeout: 1000
+            });
         };
 
         es.onmessage = e => {
             const data = JSON.parse(e.data);
             const { id, message, stack } = data;
-            store.dispatch({ type: 'ERROR_ARRIVED', data });
+            store.dispatch({ type: 'ERROR_ARRIVED', error: data });
             notifier.notify({
                 subscriptionTag: id,
                 title: message,
@@ -77,32 +97,40 @@ const ErrorsBrowser = React.createClass({
         };
     },
 
-    componentDidUpdate(prevProps, prevState) {
-        console.log('componentDidUpdate: ErrorDetails');
-        if (prevState.source && this.state.source !== prevState.source) {
-            this.reloadErrors();
-        }
-    },
-
     componentDidMount() {
+        const { sources } = this.context.store.getState();
         this.subscriber = this.context.store.subscribe(() => {
             this.setState(this.context.store.getState());
         });
 
         document.addEventListener('keydown', this.shortcutHandler);
+        document.addEventListener('keyup', this.delayedShortcutHandler);
+
         window.addEventListener('message', e => {
-            const { event, entityType, id } = JSON.parse(e.data);
-            if (event === 'notification_clicked' && entityType === 'error') {
-                this.context.store.dispatch({ type: 'ERROR_SELECTED', id });
+            if (typeof e.data === 'string') {
+                try {
+                    const { event, entityType, id } = JSON.parse(e.data);
+                    if (event === 'notification_clicked' && entityType === 'error') {
+                        this.context.store.dispatch({
+                            type: 'ERROR_SELECTED',
+                            id
+                        });
+                    }
+                } catch (err) {
+                    console.error(err, e.data);
+                }
             }
         });
 
         this.reloadErrors();
 
-        if (this.state.sources) {
-            this.state.sources.forEach(source =>
+        if (sources) {
+            /*
+            return ;
+            sources.forEach(source =>
                 this.liveUpdates(source.url + '/live-updates', this.context.store)
             );
+            */
         }
 
         window.addEventListener('online', () => {
@@ -114,10 +142,33 @@ const ErrorsBrowser = React.createClass({
 
     },
 
+    toggleSettings() {
+        this.setState({
+            view: this.state.view === 'browse'
+                ? 'settings'
+                : 'browse'
+        });
+    },
+
+    delayedShortcutHandler(e) {
+        if (e.srcElement && e.srcElement.tagName === 'INPUT') {
+            return;
+        }
+
+        const { store } = this.context;
+
+        if (e.keyCode === 74 || e.keyCode === 75) {
+            store.dispatch({ type: 'ERROR_SELECTED' });
+        }
+
+    },
+
     shortcutHandler(e) {
         if (e.srcElement && e.srcElement.tagName === 'INPUT') {
             return;
         }
+
+        const { store } = this.context;
 
         const handlers = {
             // cmd
@@ -128,11 +179,11 @@ const ErrorsBrowser = React.createClass({
             '188': () => {
                 e.preventDefault();
                 if (e.metaKey || e.ctrlKey) {
-                    this.context.store.dispatch({ type: 'TOGGLE_SETTINGS' });
+                    this.toggleSettings();
                 }
             },
             // fallback to F10 for those who use win/linux
-            '121': () => this.context.store.dispatch({ type: 'TOGGLE_SETTINGS' }),
+            '121': () => this.toggleSettings(),
             // 'r'+cmd: reload
             '82': () => {
                 if (e.metaKey || e.ctrlKey) {
@@ -142,34 +193,18 @@ const ErrorsBrowser = React.createClass({
             // 'j': down
             '74': () => {
                 if (!(e.metaKey && e.shiftKey)) {
-                    console.log('dispatch NEXT_ERROR');
-                    this.context.store.dispatch({ type: 'NEXT_ERROR' });
+                    store.dispatch({ type: 'NEXT_ERROR' });
                 }
             },
             // 'k': up
             '75': () => {
-                this.context.store.dispatch({ type: 'PREV_ERROR' });
-            },
-            // '/': search
-            '191': () => {
-                this.context.store.dispatch({ type: 'SEARCH_BEGIN' });
-                // vm.searchMode = 'forward';
-            },
-            // 'Esc'
-            '27': () => {
-                this.context.store.dispatch({ type: 'SEARCH_END' });
-                // vm.searchMode = null;
+                store.dispatch({ type: 'PREV_ERROR' });
             },
             // 'e': expand all details
             '69': () => {
-                this.context.store.dispatch({ type: 'EXPAND_ERROR_DETAILS' });
+                store.dispatch({ type: 'EXPAND_ERROR_DETAILS' });
                 // vm.$broadcast('expand_all');
             },
-            // 'f': display filters
-            '70': () => {
-                this.context.store.dispatch({ type: 'DISPLAY_FILTERS' });
-                // vm.$broadcast('nav');
-            }
         };
 
         if (e.keyCode in handlers) {
@@ -181,77 +216,28 @@ const ErrorsBrowser = React.createClass({
     },
 
     componentWillUnmount() {
-        this.context.store.unsubscribe(this.subscriber);
+        // this.context.store.unsubscribe(this.subscriber);
         document.removeListener('keydown', this.shortcutHandler);
+        document.removeListener('keyup', this.delayedShortcutHandler);
         // this.serverRequest.abort();
     },
 
+    getInitialState() {
+        return { view: 'browse' };
+    },
+
     render() {
-        const { store } = this.context;
-        const { errors, connected } = store.getState();
-        const visibleErrors = getVisibleErrors(errors.items, errors.filters);
-        const error = visibleErrors.find(err => err.id === errors.activeErrorId);
+        const { view } = this.state;
 
-        const errorDetails = error ? (
-            <ErrorDetails
-
-                expandAll={() => this.context.store.dispatch({
-                    type: 'EXPAND_ERROR_DETAILS'
-                })}
-
-                expandDetails={(index) => this.context.store.dispatch({
-                    type: 'TOGGLE_ERROR_DETAILS_NODE',
-                    index
-                })}
-
-                toggleSubscription={() => this.context.store.dispatch({
-                    type: 'TOGGLE_SUBSCRIPTION',
-                    errorId: error.id
-                })}
-
-                {...error} />
-        ) : '';
-
-        if (this.state.view === 'settings') {
-            return (<Settings />);
+        switch (view) {
+            case 'settings':
+                return <Settings />;
+            case 'browse':
+                return <Errors />;
         }
 
-        if (!connected) {
-            return <center style={{color: 'red', padding: '100px'}}>disconnected</center>;
-        }
-
-        const ui = this.state.loading ? (
-            <center style={{padding: '100px'}}>loading...</center>
-        ) : (
-            <div style={{ height: '100%', display: 'flex' }}>
-                <div style={{
-                    display: 'flex',
-                    height: '100%',
-                    width: '60%'
-                }} className="panel fixed">
-                    <Filters />
-                    <ul className="errors-list">
-                        {visibleErrors.map((error, index) => (
-                            <ErrorOverview
-                                error={error}
-                                isActive={errors.activeErrorId === error.id}
-                                onClick={() => this.context.store.dispatch({
-                                    type: 'ERROR_SELECTED',
-                                    id: error.id
-                                })}
-                                key={error.id} />))}
-                    </ul>
-                </div>
-                <div
-                    style={{ display: 'flex', height: '100%', width: '40%' }}
-                    className="panel fixed">
-                    {errorDetails}
-                </div>
-            </div>
-        );
-        return ui;
     }
 });
 
-export default ErrorsBrowser;
+export default connect()(ErrorsBrowser);
 
