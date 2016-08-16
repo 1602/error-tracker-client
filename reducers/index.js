@@ -7,27 +7,24 @@ import getVisibleErrors from '../domains/errors-filter';
 const notifier = createNotifier(window);
 
 export default combineReducers({
-    view,
     sources,
-    loading,
     errors,
-    connected
+    status
 });
 
-function view(state, action) {
-
+function status(state, action) {
     if (typeof state === 'undefined') {
-        state = 'browser';
+        state = {
+            text: ''
+        };
     }
 
-    // cmd+comma toggles settings back and forth
-    if (action.type === 'TOGGLE_SETTINGS') {
-        state = state === 'browser' ? 'settings' : 'browser';
-    }
-
-    // switch to browser mode when error selected (e.g. notification clicked)
-    if (action.type === 'ERROR_SELECTED') {
-        state = 'browser';
+    if (action.type === 'STATUS_UPDATE') {
+        return {
+            ...state,
+            text: action.text,
+            timeout: action.timeout
+        };
     }
 
     return state;
@@ -80,94 +77,23 @@ function sources(state, action) {
     return state;
 }
 
-function connected(state, action) {
-    if (typeof state === 'undefined') {
-        state = false;
-    }
-
-    if (action.type === 'CONNECTED') {
-        return true;
-    }
-
-    if (action.type === 'DISCONNECTED') {
-        return false;
-    }
-
-    return state;
-}
-
-function loading(state, action) {
-    if (typeof state === 'undefined') {
-        state = true;
-    }
-
-    if (action.type === 'ERRORS_LOADED') {
-        return false;
-    }
-
-    if (action.type === 'RELOAD_ERRORS') {
-        return true;
-    }
-
-    return state;
-}
-
 function filters(state, action) {
     if (!state) {
         state = {
-            severity: {
-                options: ['caught', 'uncaught'],
-                selected: -1
-            },
-            app: {
-                options: [],
-                selected: -1
-            },
-            env: {
-                options: [],
-                selected: -1
-            },
-            host: {
-                options: [],
-                selected: -1
-            },
+            app: '',
+            env: '',
+            msg: '',
         };
     }
 
-    if (action.type === 'ERRORS_LOADED') {
-        state = ['app', 'env', 'host'].reduce((newState, filterType) => {
-            newState[filterType] = action.errors.reduce((res, err) => {
-                if (!res.options.includes(err[filterType])) {
-                    res.options.push(err[filterType]);
-                }
-                return res;
-            }, {
-                options: state[filterType].options,
-                selected: state[filterType].selected
-            });
-            return newState;
-        }, {
-            severity: state.severity
-        });
-    } else if (action.type === 'FILTER_CHANGED') {
-        return {
-            ...state,
-            [action.name]: filter(state[action.name], action)
-        };
-    }
-
-    
-
-    return state;
-}
-
-function filter(state, action) {
     if (action.type === 'FILTER_CHANGED') {
-        return {
+        const newState = {
             ...state,
-            selected: action.value
+            [action.name]: action.value
         };
+        return newState;
     }
+
     return state;
 }
 
@@ -176,6 +102,7 @@ function errors(state, action) {
         state = {
             items: [],
             activeErrorId: 0,
+            displayedErrorId: 0,
             filters: filters(null, action)
         };
     }
@@ -194,17 +121,21 @@ function errors(state, action) {
         return {
             items,
             activeErrorId,
+            displayedErrorId: activeErrorId,
             filters: filters(state.filters, action)
         };
     }
 
     if (action.type === 'FILTER_CHANGED') {
-        const activeErrorId = state.items.length > 0 ? state.items[0].id : 0;
+        const newFilters = filters(state.filters, action);
+        const items = getVisibleErrors(state.items, newFilters);
+        const activeErrorId = items.length > 0 ? items[0].id : 0;
 
         return {
             ...state,
             activeErrorId,
-            filters: filters(state.filters, action)
+            displayedErrorId: activeErrorId,
+            filters: newFilters,
         };
     }
 
@@ -250,12 +181,15 @@ function errors(state, action) {
                 ...state,
                 activeErrorId: next.id
             };
-        case 'ERROR_SELECTED':
-            console.log('about to select', action.id);
+        case 'ERROR_SELECTED': {
+            const activeErrorId = action.id || state.activeErrorId;
+            console.log('about to select', activeErrorId);
             return {
                 ...state,
-                activeErrorId: action.id
+                activeErrorId,
+                displayedErrorId: activeErrorId
             };
+        }
         case 'TOGGLE_ERROR_DETAILS_NODE':
         case 'EXPAND_ERROR_DETAILS':
             const i = state.items.findIndex(err => err.id === state.activeErrorId);
