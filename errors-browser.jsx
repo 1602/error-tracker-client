@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { connect } from 'react-redux';
-import Errors from './containers/errors.jsx';
+import Errors from './containers/errors.js';
 import Settings from './settings.jsx';
 import createNotifier from './domains/client-side-notifications';
 

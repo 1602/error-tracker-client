@@ -4,9 +4,9 @@ import React, {
     PropTypes
 } from 'react';
 
-import Overview  from '../containers/error-overview.jsx';
-import Details   from '../containers/error-details.jsx';
-import StatusBar from '../containers/status-bar.jsx';
+import Overview  from '../containers/error-overview.js';
+import Details   from '../containers/error-details.js';
+import StatusBar from '../containers/status-bar.js';
 import Filters   from './filters.jsx';
 
 Errors.propTypes = {
