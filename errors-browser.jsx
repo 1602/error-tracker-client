@@ -3,7 +3,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import Errors from './containers/errors.js';
-import Settings from './settings.jsx';
+import Settings from './containers/settings.js';
 import createNotifier from './domains/client-side-notifications';
 
 /* global document, fetch */
