@@ -1,6 +1,6 @@
 'use strict';
 
-import React, { PropTypes } from 'react';
+import React from 'react';
 import OccurrenceDetails from './occurrence-details.jsx';
 
 Occurrences.propTypes = {

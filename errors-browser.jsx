@@ -103,8 +103,8 @@ const ErrorsBrowser = React.createClass({
             this.setState(this.context.store.getState());
         });
 
-        document.addEventListener('keydown', this.shortcutHandler);
-        document.addEventListener('keyup', this.delayedShortcutHandler);
+        document.addEventListener('keydown', this.keydownHandler);
+        document.addEventListener('keyup', this.keyupHandler);
 
         window.addEventListener('message', e => {
             if (typeof e.data === 'string') {
@@ -150,7 +150,7 @@ const ErrorsBrowser = React.createClass({
         });
     },
 
-    delayedShortcutHandler(e) {
+    keyupHandler(e) {
         if (e.srcElement && e.srcElement.tagName === 'INPUT') {
             return;
         }
@@ -163,7 +163,7 @@ const ErrorsBrowser = React.createClass({
 
     },
 
-    shortcutHandler(e) {
+    keydownHandler(e) {
         if (e.srcElement && e.srcElement.tagName === 'INPUT') {
             return;
         }
@@ -172,7 +172,15 @@ const ErrorsBrowser = React.createClass({
 
         const handlers = {
             // cmd
-            '93': () => {
+            '91': () => {
+                // do nothing (for now);
+            },
+            // alt
+            '18': () => {
+                // do nothing (for now);
+            },
+            // shift
+            '16': () => {
                 // do nothing (for now);
             },
             // cmd+, (cmd+comma): settings
@@ -192,7 +200,7 @@ const ErrorsBrowser = React.createClass({
             },
             // 'j': down
             '74': () => {
-                if (!(e.metaKey && e.shiftKey)) {
+                if (!(e.metaKey || e.shiftKey)) {
                     store.dispatch({ type: 'NEXT_ERROR' });
                 }
             },
@@ -217,8 +225,8 @@ const ErrorsBrowser = React.createClass({
 
     componentWillUnmount() {
         // this.context.store.unsubscribe(this.subscriber);
-        document.removeListener('keydown', this.shortcutHandler);
-        document.removeListener('keyup', this.delayedShortcutHandler);
+        document.removeListener('keydown', this.keydownHandler);
+        document.removeListener('keyup', this.keyupHandler);
         // this.serverRequest.abort();
     },
 

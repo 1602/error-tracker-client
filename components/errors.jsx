@@ -4,13 +4,12 @@ import React, {
     PropTypes
 } from 'react';
 
-import Overview from '../containers/error-overview.jsx';
-import Details  from './error-details.jsx';
-import StatusBar     from './status-bar.jsx';
-import Filters       from './filters.jsx';
+import Overview  from '../containers/error-overview.jsx';
+import Details   from '../containers/error-details.jsx';
+import StatusBar from '../containers/status-bar.jsx';
+import Filters   from './filters.jsx';
 
 Errors.propTypes = {
-    activeErrorId: PropTypes.string,
     errors: PropTypes.array,
     error: PropTypes.object
 };
@@ -18,7 +17,6 @@ Errors.propTypes = {
 export default Errors;
 
 function Errors({
-    activeErrorId,
     errors,
     error
 }) {
@@ -46,7 +44,7 @@ function Errors({
                 <Filters />
 
                 <ul className="errors-list">
-                    { errors.map((error, i) => <Overview { ...error } key={ i } />) }
+                    { errors.map(e => <Overview { ...e} key={ e.id } />) }
                 </ul>
             </div>
 
@@ -58,5 +56,5 @@ function Errors({
             <StatusBar />
         </div>
     );
-};
+}
 

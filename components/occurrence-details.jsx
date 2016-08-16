@@ -1,6 +1,7 @@
 'use strict';
 
 import React, { PropTypes } from 'react';
+import moment from 'moment';
 import Explore from './explore.jsx';
 
 OccurrenceDetails.propTypes = {

@@ -1,6 +1,6 @@
 'use strict';
 
-import React, { PropTypes } from 'react';
+import React from 'react';
 import moment from 'moment';
 import Occurrences from './occurrences.jsx';
 import StackTrace from './stack-trace.jsx';

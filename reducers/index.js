@@ -171,7 +171,7 @@ function errors(state, action) {
                 activeErrorId: next.id
             };
         }
-        case 'PREV_ERROR':
+        case 'PREV_ERROR': {
             const visibleErrors = getVisibleErrors(state.items, frs);
             const id = state.activeErrorId;
             const currentIndex = visibleErrors.findIndex(err => err.id === id);
@@ -181,9 +181,9 @@ function errors(state, action) {
                 ...state,
                 activeErrorId: next.id
             };
+        }
         case 'ERROR_SELECTED': {
             const activeErrorId = action.id || state.activeErrorId;
-            console.log('about to select', activeErrorId);
             return {
                 ...state,
                 activeErrorId,
@@ -191,7 +191,7 @@ function errors(state, action) {
             };
         }
         case 'TOGGLE_ERROR_DETAILS_NODE':
-        case 'EXPAND_ERROR_DETAILS':
+        case 'EXPAND_ERROR_DETAILS': {
             const i = state.items.findIndex(err => err.id === state.activeErrorId);
             return {
                 ...state,
@@ -201,6 +201,7 @@ function errors(state, action) {
                     ...state.items.slice(i + 1)
                 ]
             };
+        }
     }
 
     return state;

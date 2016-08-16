@@ -3,7 +3,7 @@
 import { connect } from 'react-redux';
 import ErrorDetails from '../components/error-details.jsx';
 
-export default connect(null, dispatch => {
+export default connect(null, (dispatch, ownProps) => ({
     expandAll: () => dispatch({
         type: 'EXPAND_ERROR_DETAILS'
     }),
@@ -15,7 +15,8 @@ export default connect(null, dispatch => {
 
     toggleSubscription: () => dispatch({
         type: 'TOGGLE_SUBSCRIPTION',
-        errorId: error.id
+        errorId: ownProps.id
     })
-})(ErrorDetails);
+
+}))(ErrorDetails);
 
