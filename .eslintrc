@@ -9,8 +9,11 @@
     },
     "extends": [ "1602", "eslint:recommended", "plugin:react/recommended" ],
     "plugins": [ "react" ],
-    "ecmaFeatures": { "jsx": true }
+    "ecmaFeatures": { "jsx": true },
     "env": {
         "browser": true
+    },
+    "rules": {
+    	"no-console": 0
     }
 }
