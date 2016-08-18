@@ -4,12 +4,10 @@ import React, { PropTypes } from 'react';
 
 Filter.propTypes = {
     name: PropTypes.string.isRequired,
-    propName: PropTypes.string.isRequired,
     options: PropTypes.array.isRequired,
     filter: PropTypes.string,
     placeholder: PropTypes.string,
     width: PropTypes.number,
-    maxLength: PropTypes.number,
 
     onFilterChanged: PropTypes.func,
     onFilterReset: PropTypes.func,

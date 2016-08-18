@@ -20,12 +20,12 @@ const ErrorsBrowser = React.createClass({
 
     reloadErrors() {
         const { store } = this.context;
-        const { sources } = store.getState();
-        // const sources = [
-        // cons{ url: 'http://localhost:8090/data/production', enabled: true },
-        // cons{ url: 'http://localhost:8090/data/staging', enabled: true },
-        // cons{ url: 'http://errors.loc.ub.io', enabled: true },
-        // ]
+        // const { sources } = store.getState();
+        const sources = [
+            { url: 'http://localhost:8090/data/production', enabled: true },
+            { url: 'http://localhost:8090/data/staging', enabled: true },
+            { url: 'http://errors.loc.ub.io', enabled: true },
+        ];
 
         if (!sources) {
             return;
