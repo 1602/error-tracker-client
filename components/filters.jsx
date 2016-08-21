@@ -4,35 +4,56 @@ import React, { PropTypes } from 'react';
 import Filter from '../containers/filter.js';
 
 Filters.propTypes = {
-    visibleItems: PropTypes.array
+    items: PropTypes.object
 };
 
 export default Filters;
 
 function Filters({
-    visibleItems
+    items
 }) {
+
+    const { visible, hidden } = items;
+    const visibleCount = visible.length;
+    const hiddenCount = hidden.length;
+
+    const legend = {
+        text: hiddenCount > 0
+            ? `${ visibleCount } out of ${ hiddenCount + visibleCount }
+                records shown`
+            : `${ visibleCount } records total`,
+
+        style: {
+            padding: '5px',
+            fontSize: '9px',
+            display: 'inline-flex'
+        }
+    };
 
     return (
         <div style={{ marginTop: '7px', marginBottom: '3px' }}>
             <Filter
                 name="app"
-                options={ calcOptions(visibleItems, 'app', 10) }
+                options={ calcOptions(visible, 'app', 10) }
                 placeholder="App name"
             />
 
             <Filter
                 name="msg"
                 width={ 200 }
-                options={ calcOptions(visibleItems, 'message', 40) }
+                options={ calcOptions(visible, 'message', 40) }
                 placeholder="Error message"
             />
 
             <Filter
                 name="env"
-                options={ calcOptions(visibleItems, 'env', 3) }
+                options={ calcOptions(visible, 'env', 3) }
                 placeholder="Environment"
             />
+
+            <div style={ legend.style }>
+                { legend.text }
+            </div>
 
         </div>
     );
