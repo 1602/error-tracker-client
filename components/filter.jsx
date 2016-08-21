@@ -37,7 +37,9 @@ function Filter({
         height: '20px',
         border: 0,
         paddingLeft: '5px',
-        outline: 0
+        outline: 0,
+        fontSize: '9px',
+        fontWeight: 100
     };
 
     const resetIconStyle = {

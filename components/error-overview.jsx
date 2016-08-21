@@ -44,7 +44,7 @@ function ErrorOverview({
             tabIndex="1"
             style={{ outline: 0 }}
             ref={ anchor => {
-                if (anchor !== null && isActive) {
+                if (anchor !== null && isActive && isHidden(anchor)) {
                     anchor.focus();
                 }
             }}
@@ -61,10 +61,17 @@ function ErrorOverview({
 
         </li>
     );
-
 }
 
 export default ErrorOverview;
+
+function isHidden(el) {
+    const { offsetTop, offsetHeight, parentNode } = el;
+    const topEdge = offsetTop - parentNode.offsetTop;
+    const bottomEdge = topEdge + offsetHeight;
+    return bottomEdge > parentNode.scrollTop + parentNode.offsetHeight
+        || topEdge < parentNode.scrollTop;
+}
 
 function ErrorMessageComponent() {
 
