@@ -28,7 +28,7 @@ function Occurrences({
                     [E]xpand all
                 </span>
             </div>
-            <ul className="error-details">
+            <ul style={{ listStyleType: 'kannada' }}>
                 {occurrences.map((info, index) => (
                     <OccurrenceDetails
                         key={index}

@@ -65,10 +65,17 @@ function ErrorDetails({
         height: '100%'
     };
 
+    const verboseMessageStyle = {
+        color: 'rgba(202, 28, 7, 0.92)',
+        margin: '0 0 5px',
+        display: 'block',
+        fontWeight: '500',
+    };
+
     return (
         <div style={ containerStyle }>
             <div className="info-block">
-                <b className="error-message-verbose">{ message }</b>
+                <b style={ verboseMessageStyle }>{ message }</b>
 
                 <span onClick={ toggleSubscription }>
                     <span style={ subscribeIconStyle }>

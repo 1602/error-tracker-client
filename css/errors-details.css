@@ -8,15 +8,6 @@
       background: rgba(0, 0, 0, 0.05);
   }
 
-  .info-block .error-message-verbose {
-      color: rgba(202, 28, 7, 0.92);
-      margin: 0 0 5px;
-      display: block;
-      font-weight: 500;
-  }
-
-  b { font-weight: 700 }
-
   .info-block pre, .info-block span {
       font-family: menlo, monospace;
       font-size: 10px;
@@ -29,6 +20,3 @@
       white-space: normal;
   }
 
-  ul.error-details {
-      list-style-type: kannada;
-  }
