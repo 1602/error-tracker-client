@@ -20,6 +20,12 @@ const Errors = React.createClass({
         return { limit: 20 };
     },
 
+    componentWillReceiveProps(newProps) {
+        if (this.props.errors !== newProps.errors) {
+            this.setState({ limit: 20 });
+        }
+    },
+
     render() {
         const {
             errors,
