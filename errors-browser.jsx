@@ -20,12 +20,7 @@ const ErrorsBrowser = React.createClass({
 
     reloadErrors() {
         const { store } = this.context;
-        // const { sources } = store.getState();
-        const sources = [
-            { url: 'http://localhost:8090/data/production', enabled: true },
-            { url: 'http://localhost:8090/data/staging', enabled: true },
-            { url: 'http://errors.loc.ub.io', enabled: true },
-        ];
+        const { sources } = store.getState();
 
         if (!sources) {
             return;
@@ -125,18 +120,15 @@ const ErrorsBrowser = React.createClass({
         this.reloadErrors();
 
         if (sources) {
-            /*
-            return ;
-            sources.forEach(source =>
-                this.liveUpdates(source.url + '/live-updates', this.context.store)
-            );
-            */
+            sources
+                .filter(s => s.enabled)
+                .forEach(s => this.liveUpdates(s.url + '/live-updates'));
         }
 
         window.addEventListener('online', () => {
             console.log('back online');
             this.reloadErrors();
-            // this.liveUpdates(this.props.source + '/live-updates', this.context.store);
+                // this.liveUpdates(this.props.source + '/live-updates');
             // Re-sync data with server.
         }, false);
 

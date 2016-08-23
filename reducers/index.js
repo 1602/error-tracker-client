@@ -31,6 +31,14 @@ function status(state, action) {
 }
 
 function sources(state, action) {
+    /*
+    const sources = [
+        { url: 'http://localhost:8090/data/production', enabled: true },
+        { url: 'http://localhost:8090/data/staging', enabled: true },
+        { url: 'http://errors.loc.ub.io', enabled: true },
+    ];
+    return sources;
+    //*/
 
     if (typeof state === 'undefined') {
         state = localStorage.sources
