@@ -5,7 +5,8 @@ import { connect } from 'react-redux';
 
 export default connect((state, ownProps) => {
     return {
-        isActive: ownProps.id === state.errors.activeErrorId
+        isActive: ownProps.id === state.errors.activeErrorId,
+        aboutToDelete: state.errors.deleteErrorId === ownProps.id
     };
 }, (dispatch, ownProps) => ({
 
