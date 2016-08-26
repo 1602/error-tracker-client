@@ -115,9 +115,11 @@ const ConfirmationComponent = React.createClass({
             return;
         }
 
-        if (e.keyCode === 89) {
+        // confirm on 'Y' or 'Return'
+        if (e.keyCode === 89 || e.keyCode === 13) {
             this.props.onConfirm();
-        } else if (e.keyCode === 27 || e.keyCode === 78) {
+        // cancel on 'N' or 'Esc'
+        } else if (e.keyCode === 78 || e.keyCode === 27) {
             this.props.onCancel();
         }
 
