@@ -8,6 +8,11 @@ ul.errors-list {
 }
 
 .errors-list > li {
+    list-style: none;
+    margin: 5px 0 5px 5px;
+    display: flex;
+}
+.errors-list > li > div {
     font-family: menlo, monospace;
     justify-content: space-between;
     display: flex;
@@ -15,8 +20,6 @@ ul.errors-list {
     font-size: 12px;
     border-radius: 1px;
     padding: 6px;
-    margin: 5px 0 5px 5px;
-    list-style: none;
     background: rgba(0, 0, 0, 0.05);
     position: relative;
     border-left: 5px solid rgba(0,0,0,0.1);
@@ -28,11 +31,11 @@ ul.errors-list {
     display: flex;
 }
 
-li.is-active {
+.errors-list .is-active {
     background: #CACFD3;
 }
 
-.errors-list > li.uncaught-exception {
+.errors-list > li > .uncaught-exception {
     border-left-color: crimson;
 }
 
