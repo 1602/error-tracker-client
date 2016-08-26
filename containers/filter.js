@@ -1,8 +1,7 @@
 'use stict';
 
 import Filter from '../components/filter.jsx';
-import { connect } from 'react-redux'
-import getVisibleErrors from '../domains/errors-filter';
+import { connect } from 'react-redux';
 
 export default connect((state, ownProps) => ({
     filter: state.errors.filters[ownProps.name],

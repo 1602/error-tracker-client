@@ -1,6 +1,6 @@
 'use strict';
 
-import { connect } from 'react-redux'
+import { connect } from 'react-redux';
 import StatusBar from '../components/status-bar.jsx';
 
 export default connect(state => ({
