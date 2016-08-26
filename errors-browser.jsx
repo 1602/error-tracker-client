@@ -227,8 +227,8 @@ const ErrorsBrowser = React.createClass({
 
     componentWillUnmount() {
         // this.context.store.unsubscribe(this.subscriber);
-        document.removeListener('keydown', this.keydownHandler);
-        document.removeListener('keyup', this.keyupHandler);
+        document.removeEventListener('keydown', this.keydownHandler);
+        document.removeEventListener('keyup', this.keyupHandler);
         // this.serverRequest.abort();
     },
 
