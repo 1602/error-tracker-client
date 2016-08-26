@@ -7,7 +7,7 @@
             "jsx": true
         }
     },
-    "extends": [ "1602", "eslint:recommended", "plugin:react/recommended" ],
+    "extends": [ "eslint:recommended", "plugin:react/recommended", "1602" ],
     "plugins": [ "react" ],
     "ecmaFeatures": { "jsx": true },
     "env": {
