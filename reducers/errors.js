@@ -191,7 +191,7 @@ function error(state, action) {
             ...action.error,
             severity: state.type,
             isSubscribed: notifier.isSubscribed(state.id),
-            expanded: [ true ].concat(state.expanded)
+            expanded: [true].concat(state.expanded)
         };
 
     } else if (action.type === 'TOGGLE_SUBSCRIPTION') {
