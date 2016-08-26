@@ -65,12 +65,19 @@ const Errors = React.createClass({
 
                     <Filters />
 
-                    <ul className="errors-list" ref="list" onScroll={ () => {
-                        if (isAllTheWayDown(this.refs.list) &&
-                            hasMoreItemsToShow()) {
-                            this.setState({ limit: limit + 20 });
+                    <ul
+                        style={{
+                            overflow: 'auto'
+                        }}
+                        className="errors-list"
+                        ref="list"
+                        onScroll={ () => {
+                            if (isAllTheWayDown(this.refs.list) &&
+                                hasMoreItemsToShow()) {
+                                this.setState({ limit: limit + 20 });
+                            }
                         }
-                    }}> { errors.slice(0, limit).map(e =>
+                    }> { errors.slice(0, limit).map(e =>
                         <Overview { ...e} key={ e.id } />) }
                     </ul>
                 </div>

@@ -1,38 +1,7 @@
-ul.errors-list {
-    overflow: auto;
-}
-
-.errors-list > li {
-    list-style: none;
-    margin: 5px 0 5px 5px;
-    display: flex;
-}
-
-.errors-list > li > div {
-    font-family: menlo, monospace;
-    justify-content: space-between;
-    display: flex;
-    align-items: center;
-    font-size: 12px;
-    border-radius: 1px;
-    padding: 6px;
-    background: rgba(0, 0, 0, 0.05);
-    position: relative;
-    border-left: 5px solid rgba(0,0,0,0.1);
-    box-sizing: border-box;
-}
 
 .errors-list .error {
     max-width: calc(100% - 150px);
     display: flex;
-}
-
-.errors-list .is-active {
-    background: #CACFD3;
-}
-
-.errors-list > li > .uncaught-exception {
-    border-left-color: crimson;
 }
 
 .env-badge {

@@ -41,13 +41,16 @@ const ErrorOverview = React.createClass({
         } = this.props;
 
         const isCaught = type === 'caught-exception';
-        const className = `${isCaught ? 'caught' : 'uncaught'}-exception ${isActive ? 'is-active' : ''}`;
+        const className = `${isCaught ? 'caught' : 'uncaught'}-exception`;
 
         return (
             <li
                 style={{
                     outline: 0,
-                    position: 'relative'
+                    position: 'relative',
+                    listStyle: 'none',
+                    margin: '5px 0 5px 5px',
+                    display: 'flex'
                 }}
                 tabIndex="1"
                 ref={ anchor => {
@@ -61,7 +64,19 @@ const ErrorOverview = React.createClass({
                 <div
                     className={ className }
                     style={{
+                        fontFamily: 'menlo, monospace',
+                        justifyContent: 'space-between',
                         display: 'flex',
+                        alignItems: 'center',
+                        fontSize: '12px',
+                        borderRadius: '1px',
+                        padding: '6px',
+                        background: isActive ? '#CACFD3' : 'rgba(0, 0, 0, 0.05)',
+                        position: 'relative',
+                        borderLeft: `5px solid ${ isCaught
+                            ? 'rgba(0,0,0,0.1)'
+                            : 'crimson' }`,
+                        boxSizing: 'border-box',
                         width: '100%',
                         transition: 'all .2s',
                         WebkitFilter: aboutToDelete ? 'blur(1px) grayscale(50%) brightness(145%)' : '',
