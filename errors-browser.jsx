@@ -161,8 +161,18 @@ const ErrorsBrowser = React.createClass({
         }
 
         const { store } = this.context;
+        const state = store.getState();
 
         const handlers = {
+            // d
+            '68': () => {
+                const { deleteErrorId, activeErrorId } = state.errors;
+                if (deleteErrorId && deleteErrorId === activeErrorId) {
+                    store.dispatch({ type: 'DELETE_ERROR_CONFIRM' });
+                } else {
+                    store.dispatch({ type: 'DELETE_ERROR' });
+                }
+            },
             // cmd
             '91': () => {
                 // do nothing (for now);
