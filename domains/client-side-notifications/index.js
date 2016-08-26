@@ -3,7 +3,7 @@
 export default createNotifier;
 
 function createNotifier(win) {
-    const storage = 'undefined' === typeof chrome ? localStorage : {};
+    const storage = typeof chrome === 'undefined' ? localStorage : {};
     if (!win.Notification) {
         return function() {};
     }
@@ -79,7 +79,7 @@ function createNotifier(win) {
         });
 
         notification.onclick = function(e) {
-            if ('function' === typeof spec.onClick) {
+            if (typeof spec.onClick === 'function') {
                 window.focus();
                 spec.onClick(e);
                 notification.close();
