@@ -21,7 +21,7 @@ const Errors = React.createClass({
     },
 
     componentWillReceiveProps(newProps) {
-        if (this.props.errors !== newProps.errors) {
+        if (Math.abs(this.props.errors.length - newProps.errors.length) > 1) {
             this.setState({ limit: 20 });
         }
     },
