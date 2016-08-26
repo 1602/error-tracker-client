@@ -8,69 +8,195 @@ import moment from 'moment';
 const ErrorStatsContainer = connect()(ErrorStatsComponent());
 const ErrorMessageContainer = connect()(ErrorMessageComponent());
 
-ErrorOverview.propTypes = {
-    message: PropTypes.string,
-    type: PropTypes.string,
-    env: PropTypes.string,
-    app: PropTypes.string.isRequired,
-    occurrences: PropTypes.number,
-    lastOccurrence: PropTypes.string,
-    isActive: PropTypes.bool.isRequired,
+const ErrorOverview = React.createClass({
+    propTypes: {
+        message: PropTypes.string,
+        type: PropTypes.string,
+        env: PropTypes.string,
+        app: PropTypes.string.isRequired,
+        occurrences: PropTypes.number,
+        lastOccurrence: PropTypes.string,
+        isActive: PropTypes.bool.isRequired,
+        aboutToDelete: PropTypes.bool,
 
-    onClick: PropTypes.func.isRequired,
-    onAppBadgeClick: PropTypes.func.isRequired,
-    onEnvBadgeClick: PropTypes.func.isRequired
-};
+        onClick: PropTypes.func.isRequired,
+        onAppBadgeClick: PropTypes.func.isRequired,
+        onEnvBadgeClick: PropTypes.func.isRequired
+    },
 
-function ErrorOverview({
-    type,
-    app,
-    env,
-    message,
-    occurrences,
-    lastOccurrence,
-    isActive,
+    render() {
+        const {
+            type,
+            app,
+            env,
+            message,
+            occurrences,
+            lastOccurrence,
+            isActive,
+            aboutToDelete,
 
-    onClick,
-    onAppBadgeClick,
-    onEnvBadgeClick
-}) {
-    const isCaught = type === 'caught-exception';
-    const className = `${isCaught ? 'caught' : 'uncaught'}-exception ${isActive ? 'is-active' : ''}`;
+            onClick,
+            onAppBadgeClick,
+            onEnvBadgeClick
+        } = this.props;
 
-    return (
-        <li
-            className={ className }
-            tabIndex="1"
-            style={{ outline: 0 }}
-            ref={ anchor => {
-                if (anchor !== null && isActive && isHidden(anchor)) {
-                    anchor.focus();
+        const isCaught = type === 'caught-exception';
+        const className = `${isCaught ? 'caught' : 'uncaught'}-exception ${isActive ? 'is-active' : ''}`;
+
+        return (
+            <li
+                style={{
+                    outline: 0,
+                    position: 'relative'
+                }}
+                tabIndex="1"
+                ref={ anchor => {
+                    if (anchor !== null && isActive && isHidden(anchor)) {
+                        anchor.focus();
+                    }
+                }}
+                onClick={ onClick }
+            >
+
+                <div
+                    className={ className }
+                    style={{
+                        display: 'flex',
+                        width: '100%',
+                        transition: 'all .2s',
+                        WebkitFilter: aboutToDelete ? 'blur(1px) grayscale(50%) brightness(145%)' : '',
+                    }}>
+
+                    <ErrorMessageContainer
+                        {...{ message, app, onAppBadgeClick }}
+                    />
+
+                    <ErrorStatsContainer
+                        {...{ env, occurrences, lastOccurrence, onEnvBadgeClick }}
+                    />
+                </div>
+
+                { aboutToDelete
+                    ? <DeleteErrorConfirmationContainer text="remove? sure?" />
+                    : null
                 }
-            }}
-            onClick={ onClick }
-        >
 
-            <ErrorMessageContainer
-                {...{ message, app, onAppBadgeClick }}
-            />
-
-            <ErrorStatsContainer
-                {...{ env, occurrences, lastOccurrence, onEnvBadgeClick }}
-            />
-
-        </li>
-    );
-}
+            </li>
+        );
+    }
+});
 
 export default ErrorOverview;
+
+const ConfirmationComponent = React.createClass({
+    displayName: 'Confirmation',
+
+    propTypes: {
+        text: PropTypes.string,
+
+        onConfirm: PropTypes.func,
+        onCancel: PropTypes.func,
+    },
+
+    componentDidMount() {
+        const { style } = this.refs.container;
+        style.transition = 'width 0.2s ease-in-out';
+        const max = this.refs.container.scrollWidth;
+        style.width = max + 'px';
+        document.addEventListener('keydown', this.keydownHandler);
+    },
+
+    componentWillUnmount() {
+        document.removeEventListener('keydown', this.keydownHandler);
+    },
+
+    keydownHandler(e) {
+        if (e.srcElement && e.srcElement.tagName === 'INPUT') {
+            return;
+        }
+
+        if (e.keyCode === 89) {
+            this.props.onConfirm();
+        } else if (e.keyCode === 27 || e.keyCode === 78) {
+            this.props.onCancel();
+        }
+
+    },
+
+    render() {
+        const {
+            text,
+
+            onConfirm,
+            onCancel
+        } = this.props;
+
+        const container = {
+            position: 'absolute',
+            borderRadius: '1px',
+            right: 0,
+            width: 0,
+            overflow: 'hidden',
+            display: 'flex',
+            height: '28px',
+            lineHeight: '28px',
+            backgroundColor: '#6161a0',
+            color: 'white',
+            textAlign: 'right',
+            boxShadow: 'rgba(50, 50, 100, 0.2) -5px 0px 20px inset'
+        };
+
+        const message = {
+            padding: '0 40px',
+            fontSize: '9px',
+            letterSpacing: '0.075em',
+            fontWeight: 900,
+            whiteSpace: 'nowrap'
+        };
+
+        const baseButton = {
+            lineHeight: '28px',
+            textAlign: 'center',
+            fontWeight: '100',
+            fontSize: '10px',
+            display: 'inline-block',
+            height: '28px',
+            padding: '0 16px',
+        };
+
+        const confirmButton = {
+            ...baseButton,
+            color: 'white',
+            backgroundColor: '#d66060'
+        };
+
+        const cancelButton = {
+            ...baseButton,
+            color: 'black',
+            backgroundColor: '#94cd94'
+        };
+
+        return (
+            <span ref="container" style={ container }>
+                <span style={ message }> { text }</span>
+                <span onClick={ onConfirm } style={ confirmButton }>Y</span>
+                <span onClick={ onCancel } style={ cancelButton }>N</span>
+            </span>
+        );
+    }
+});
+
+const DeleteErrorConfirmationContainer = connect(null, dispatch => ({
+    onConfirm: () => dispatch({ type: 'DELETE_ERROR_CONFIRM' }),
+    onCancel: () => dispatch({ type: 'DELETE_ERROR_CANCEL' }),
+}))(ConfirmationComponent);
 
 function isHidden(el) {
     const { offsetTop, offsetHeight, parentNode } = el;
     const topEdge = offsetTop - parentNode.offsetTop;
     const bottomEdge = topEdge + offsetHeight;
-    return bottomEdge > parentNode.scrollTop + parentNode.offsetHeight
-        || topEdge < parentNode.scrollTop;
+    return bottomEdge > parentNode.scrollTop + parentNode.offsetHeight ||
+        topEdge < parentNode.scrollTop;
 }
 
 function ErrorMessageComponent() {
